@@ -223,7 +223,7 @@ Despite is a very obvious way to spot the problem, there are other forms that ar
 
 Even this *class* is **not used in any part of the web api code** is still in the **dll** and **accessible** by the **Serializer with the mentioned settings**.
 
-### Create an instance of VulnerableFileWrapper or OtherBadConstructs to create a text file in a temp folder**
+### Create an instance of **VulnerableFileWrapper** or **OtherBadConstructs** to create a text file in a temp folder
 
 Try to build a json payload to create a text file.
 
