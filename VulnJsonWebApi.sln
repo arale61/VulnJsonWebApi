@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulnJsonWebApi", "VulnJsonWebApi\VulnJsonWebApi.csproj", "{8774FB96-CB49-4418-AAB6-7BA51A02A4DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLoadClassLib", "AutoLoadClassLib\AutoLoadClassLib.csproj", "{BEE1281A-A3A3-4059-B9E2-84E0A99ABC86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8774FB96-CB49-4418-AAB6-7BA51A02A4DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8774FB96-CB49-4418-AAB6-7BA51A02A4DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8774FB96-CB49-4418-AAB6-7BA51A02A4DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8774FB96-CB49-4418-AAB6-7BA51A02A4DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEE1281A-A3A3-4059-B9E2-84E0A99ABC86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE1281A-A3A3-4059-B9E2-84E0A99ABC86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE1281A-A3A3-4059-B9E2-84E0A99ABC86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE1281A-A3A3-4059-B9E2-84E0A99ABC86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A3D4CBDB-E3E2-4BF9-979E-0F7CF23540A4}
+	EndGlobalSection
+EndGlobal
