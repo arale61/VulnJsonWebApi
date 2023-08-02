@@ -197,7 +197,7 @@ This will enable the **Serializer** to create any instance without dealing with 
 
 ![WeatherForeCast rawData](images/weatherforecast_rawdata.png)
 
-But keep in mind this **placeholder** or **placehoder for using an insecure class for deserialization** may not be in this form, there are **other ways of missusing the serializer to serialize an object**, for example, deserializing into an object and just after casting for a specific type, firing any exceptions, but it will already be to late, since the **payload was executed at the moment the instance was created**.
+But keep in mind this **placeholder** or **placehoder for using an insecure class for deserialization** may not be in this form, there are **other ways of missusing the serializer to serialize an object**, for example, deserializing into an object and just after casting for a specific type, firing any exceptions, but it will already be too late, since the **payload was executed at the moment the instance was created**.
 
 
 # Insecure classes for (de)serialization
