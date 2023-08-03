@@ -259,7 +259,9 @@ This class presents a gadget, a piece of code, that enables to load a random ass
 
 ## Attacking the web api
 
-The **web api** project has installed the **Core.System.Configuration.Install** package.
+I've installed the package **Core.System.Configuration.Install** in the **web api** project.
+
+It's not referenced in my user code, but is referenced as a nuget dependency.
 
 You can try to follow these steps:
 
